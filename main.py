@@ -1,111 +1,86 @@
 import streamlit as st
 
-# 1. 페이지 기본 설정 (미니멀 브랜딩)
-st.set_page_config(page_title="OOTD Archive", page_icon="👗", layout="centered")
+# 1. 페이지 설정 (가장 먼저 실행되어야 함)
+st.set_page_config(page_title="Vibe Picker", page_icon="🖤", layout="centered")
 
-# 2. 감각적인 레이아웃을 위한 Custom CSS
+# 2. 고정된 스타일링 (CSS)
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;1,400&family=Noto+Sans+KR:wght@100;300;400&display=swap');
-    
-    /* 전체 배경 및 폰트 */
     .main { background-color: #ffffff; }
-    h1, h2, h3 { font-family: 'Bodoni Moda', 'Noto Sans KR', serif; font-weight: 400; letter-spacing: -0.5px; }
-    p, span, button { font-family: 'Noto Sans KR', sans-serif; font-weight: 300; }
-
-    /* 버튼 스타일링: 미니멀 블랙 & 화이트 */
-    .stButton>button {
+    div.stButton > button {
+        width: 100%;
         border-radius: 0px;
         border: 1px solid #000;
-        background-color: transparent;
-        color: #000;
-        padding: 10px 20px;
-        transition: all 0.4s ease;
-        width: 100%;
-        margin-bottom: 10px;
+        background-color: white;
+        color: black;
+        height: 3em;
+        transition: 0.3s;
     }
-    .stButton>button:hover {
+    div.stButton > button:hover {
         background-color: #000;
         color: #fff;
-        border: 1px solid #000;
     }
-
-    /* 이미지 카드 스타일 */
-    .stImage {
-        border-radius: 0px;
-        filter: grayscale(20%);
-        transition: filter 0.5s ease;
+    .vibe-card {
+        padding: 20px;
+        border: 1px solid #eee;
+        margin-top: 20px;
     }
-    .stImage:hover { filter: grayscale(0%); }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. 데이터 구성: 오늘 나의 '추구미' 테마
-themes = {
-    "Minimalist": {
-        "title": "Minimalist Archive",
-        "tag": "#절제의미학 #화이트셔츠 #슬랙스",
-        "desc": "군더더기 없는 실루엣. 가장 단순한 것이 가장 파워풀합니다.",
-        "image": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop",
-        "advice": "실버 액세서리 하나만 매치하세요."
+# 3. 데이터 세팅 (이미지 주소는 Unsplash 다이렉트 링크 사용)
+data = {
+    "Minimal Classic": {
+        "img": "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=800",
+        "tag": "무채색의 정갈함, 셔츠와 슬랙스",
+        "tip": "가죽 벨트 하나로 룩의 완성도를 높여보세요."
     },
-    "Romantic": {
-        "title": "Soft Romance",
-        "tag": "#부드러운니트 #실크스커트 #파스텔",
-        "desc": "따뜻하고 우아한 분위기. 당신의 다정함이 옷을 통해 드러납니다.",
-        "image": "https://images.unsplash.com/photo-1529133039941-e856b3629146?q=80&w=1000&auto=format&fit=crop",
-        "advice": "머리는 자연스러운 웨이브를 추천해요."
+    "Lovely Mood": {
+        "img": "https://images.unsplash.com/photo-1554520735-0ad66a951bb8?auto=format&fit=crop&w=800",
+        "tag": "셔링 디테일과 부드러운 파스텔 톤",
+        "tip": "플랫 슈즈를 매치해 사랑스러움을 더하세요."
     },
-    "Street Gorpcore": {
-        "title": "Modern Nomad",
-        "tag": "#바람막이 #카고팬츠 #시티보이",
-        "desc": "활동적이지만 세련된 감각. 도심 속의 자유로움을 만끽하세요.",
-        "image": "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1000&auto=format&fit=crop",
-        "advice": "투박한 스니커즈가 오늘 룩의 마침표입니다."
-    },
-    "Vintage Y2K": {
-        "title": "Electric Vintage",
-        "tag": "#크롭티 #와이드진 #레트로",
-        "desc": "과감한 컬러와 키치한 감성. 오늘의 주인공은 당신입니다.",
-        "image": "https://images.unsplash.com/photo-1581044777550-4cfa60707c33?q=80&w=1000&auto=format&fit=crop",
-        "advice": "컬러풀한 헤어핀으로 위트를 더해보세요."
+    "Street Hip": {
+        "img": "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800",
+        "tag": "오버핏 후드와 비니, 와이드 팬츠",
+        "tip": "볼드한 실버 목걸이가 잘 어울려요."
     }
 }
 
-# 4. 앱 UI 레이아웃
-st.markdown("<h1 style='text-align: center; margin-bottom: 50px;'>AESTHETIC VIBE</h1>", unsafe_allow_html=True)
+# 4. 앱 타이틀
+st.markdown("<h2 style='text-align: center;'>Choose Your Vibe</h2>", unsafe_allow_html=True)
+st.write("")
 
-# 사이드바 혹은 상단에 테마 선택
-st.write("---")
-cols = st.columns(4)
-selected = None
+# 5. 버튼 레이아웃 (3열)
+col1, col2, col3 = st.columns(3)
 
-# 세션 상태를 이용해 선택 유지
-if 'vibe' not in st.session_state:
-    st.session_state.vibe = "Minimalist"
+# 세션 상태 초기화 (처음 접속 시 첫 번째 데이터 표시)
+if 'choice' not in st.session_state:
+    st.session_state.choice = "Minimal Classic"
 
-for i, (name, content) in enumerate(themes.items()):
-    if cols[i].button(name):
-        st.session_state.vibe = name
+with col1:
+    if st.button("미니멀"): st.session_state.choice = "Minimal Classic"
+with col2:
+    if st.button("러블리"): st.session_state.choice = "Lovely Mood"
+with col3:
+    if st.button("스트릿"): st.session_state.choice = "Street Hip"
 
-# 5. 선택된 테마 전시 (룩북 스타일)
-current = themes[st.session_state.vibe]
+st.divider()
 
-display_col_left, display_col_right = st.columns([1.2, 1])
+# 6. 결과 표시 섹션
+selected = st.session_state.choice
+item = data[selected]
 
-with display_col_left:
-    st.image(current["image"], use_container_width=True)
+c1, c2 = st.columns([1, 1])
 
-with display_col_right:
-    st.markdown(f"<p style='color: #888; font-size: 14px;'>{current['tag']}</p>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='margin-top: -10px;'>{current['title']}</h2>", unsafe_allow_html=True)
-    st.write("")
-    st.write(current["desc"])
-    st.markdown("---")
-    st.markdown(f"**💡 Editorial Advice**")
-    st.info(current["advice"])
+with c1:
+    # use_column_width 대신 최신 버전인 use_container_width 사용
+    st.image(item["img"], use_container_width=True)
 
-# 6. 푸터
-st.markdown("<br><br><p style='text-align: center; color: #eee; font-size: 12px; letter-spacing: 2px;'>CURATED BY VIBE CODING</p>", unsafe_allow_html=True)ing with Streamlit</p>", unsafe_allow_html=True)
-st.markdown("---")
-st.caption("데이터 출처: 교육부 나이스(NEIS) API")
+with c2:
+    st.markdown(f"### {selected}")
+    st.write(f"**Key:** {item['tag']}")
+    st.write("---")
+    st.info(f"💡 {item['tip']}")
+
+st.markdown("<p style='text-align:center; color:#ccc; margin-top:50px;'>Produced by Vibe Coding</p>", unsafe_allow_html=True)
