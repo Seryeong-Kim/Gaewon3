@@ -43,7 +43,8 @@ data = {
     "Street Hip": {
         "img": "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800",
         "tag": "오버핏 후드와 비니, 와이드 팬츠",
-        "tip": "볼드한 실버 목걸이가 잘 어울import streamlit as st
+        "tip": "볼드한 실버 목걸이가 잘 어울려요
+        import streamlit as st
 import random
 
 # 1. 페이지 설정
