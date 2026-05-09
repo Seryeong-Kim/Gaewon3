@@ -40,7 +40,7 @@ data = {
         "tag": "셔링 디테일과 부드러운 파스텔 톤",
         "tip": "플랫 슈즈를 매치해 사랑스러움을 더하세요."
     },
-    "Street Hip": {
+    "Street Hip": 
         "img": "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800",
         "tag": "오버핏 후드와 비니, 와이드 팬츠",
         "tip": "볼드한 실버 목걸이가 잘 어울려요"
