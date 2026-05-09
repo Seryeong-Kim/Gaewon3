@@ -29,7 +29,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # 3. 데이터 세팅 (이미지 주소는 Unsplash 다이렉트 링크 사용)
-data = {
+data = 
     "Minimal Classic": {
         "img": "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=800",
         "tag": "무채색의 정갈함, 셔츠와 슬랙스",
