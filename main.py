@@ -1,75 +1,95 @@
 import streamlit as st
-import requests
-from datetime import datetime
+import random
 
-# 1. 페이지 설정 (심플 & 미니멀)
-st.set_page_config(page_title="개원중 급식 체크", page_icon="🍚")
+# 세션 설정 및 페이지 디자인
+st.set_page_config(page_title="Mood Picker", page_icon="✨", layout="centered")
 
-# 2. 학교 정보 정의
-ATPT_OFCDC_SC_CODE = "B10" # 서울특별시교육청
-SD_SCHUL_CODE = "7010561"   # 개원중학교
-
-def get_meal_data(ym):
-    """나이스 API에서 해당 월의 급식 데이터를 가져옵니다."""
-    url = "https://open.neis.go.kr/hub/mealServiceDietInfo"
-    params = {
-        "Type": "json",
-        "ATPT_OFCDC_SC_CODE": ATPT_OFCDC_SC_CODE,
-        "SD_SCHUL_CODE": SD_SCHUL_CODE,
-        "MLSV_YMD": ym
+# 커스텀 CSS: 미니멀한 감성을 위한 폰트 및 스타일링
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400&display=swap');
+    html, body, [class*="css"] {
+        font-family: 'Noto Sans KR', sans-serif;
+        color: #333333;
     }
+    .stButton>button {
+        border-radius: 20px;
+        border: 1px solid #eeeeee;
+        background-color: white;
+        transition: all 0.3s;
+        width: 100%;
+    }
+    .stButton>button:hover {
+        border-color: #000000;
+        color: #000000;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# 헤더 섹션
+st.title("Today's Vibe ✨")
+st.write("오늘 당신이 머물고 싶은 분위기를 선택하세요.")
+
+# 데이터 정의: 추구미 스타일
+styles = {
+    "Minimal Classic": {
+        "desc": "정갈한 셔츠, 잘 재단된 슬랙스, 그리고 화이트 톤.",
+        "quote": "가장 단순한 것이 가장 아름답습니다.",
+        "color": "#F5F5F5"
+    },
+    "Soft Grunge": {
+        "desc": "오버사이즈 니트, 바랜 데님, 그리고 자유로운 레이어드.",
+        "quote": "정해진 틀에서 조금은 벗어나도 괜찮아요.",
+        "color": "#D3D3D3"
+    },
+    "Quiet Luxury": {
+        "desc": "로고 없는 고급스러움, 뉴트럴 톤의 캐시미어와 실크.",
+        "quote": "드러내지 않아도 느껴지는 견고한 취향.",
+        "color": "#EAE0D5"
+    },
+    "Sporty Chic": {
+        "desc": "바이커 쇼츠, 오버핏 블레이저, 그리고 깨끗한 스니커즈.",
+        "quote": "움직임 속에서 발견하는 도심의 활기.",
+        "color": "#E8F0FE"
+    }
+}
+
+# 인터페이스: 버튼 배열
+col1, col2 = st.columns(2)
+
+selected_mood = None
+
+with col1:
+    if st.button("미니멀 클래식"):
+        selected_mood = "Minimal Classic"
+    if st.button("소프트 그렁지"):
+        selected_mood = "Soft Grunge"
+
+with col2:
+    if st.button("콰이어트 럭셔리"):
+        selected_mood = "Quiet Luxury"
+    if st.button("스포티 시크"):
+        selected_mood = "Sporty Chic"
+
+st.divider()
+
+# 결과 출력
+if selected_mood:
+    res = styles[selected_mood]
+    st.subheader(f"Target Vibe: {selected_mood}")
     
-    try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        # 데이터가 정상적으로 존재할 경우에만 반환
-        if 'mealServiceDietInfo' in data:
-            return data['mealServiceDietInfo'][1]['row']
-        return []
-    except:
-        return []
+    # 감각적인 카드 형태의 결과창
+    st.info(f"**Style Cue:** {res['desc']}")
+    st.write(f"> *{res['quote']}*")
+    
+    # 랜덤 팁 추가
+    tips = ["볼드한 실버 링으로 포인트를 줘보세요.", "향수는 우디한 계열을 추천해요.", "헤어는 자연스러운 로우번 어때요?"]
+    st.caption(f"💡 Suggestion: {random.choice(tips)}")
 
-# 3. UI 구성
-st.title("🍚 개원중학교 급식 리스트")
-
-# 사이드바에서 월 선택 (기본값 현재 월)
-now = datetime.now()
-selected_month = st.sidebar.selectbox(
-    "조회할 월을 선택하세요", 
-    [f"{i:02d}" for i in range(1, 13)], 
-    index=now.month - 1
-)
-target_ym = f"{now.year}{selected_month}"
-
-st.subheader(f"📅 {now.year}년 {selected_month}월 식단")
-
-meals = get_meal_data(target_ym)
-
-if not meals:
-    st.warning("데이터를 불러올 수 없습니다. (데이터 미등록 또는 API 오류)")
 else:
-    for meal in meals:
-        # 날짜 포맷팅 (20240501 -> 05월 01일)
-        date_raw = meal['MLSV_YMD']
-        formatted_date = f"{date_raw[4:6]}월 {date_raw[6:8]}일"
-        
-        # 메뉴 정제 (알레르기 정보 숫자 제거 및 줄바꿈 처리)
-        menu = meal['DDISH_NM'].replace("<br/>", "\n")
-        import re
-        menu = re.sub(r'\([0-9.]+\)', '', menu) # 숫자/마침표 괄호 제거 (깔끔하게)
-        
-        # 칼로리 정보
-        cal_info = meal['CAL_INFO']
-        cal_value = float(re.findall(r'\d+\.?\d*', cal_info)[0]) # 숫자만 추출
-        
-        # 디자인 및 칼로리 경고 (900kcal 기준)
-        with st.expander(f"📍 {formatted_date} 식단 보기", expanded=(date_raw == now.strftime("%Y%m%d"))):
-            st.text(menu)
-            
-            if cal_value > 900:
-                st.error(f"⚠️ 칼로리 주의: {cal_info} (900kcal 초과!)")
-            else:
-                st.success(f"✅ 칼로리 적정: {cal_info}")
+    st.write("버튼을 눌러 오늘의 '추구미'를 확인하세요.")
 
+# 푸터
+st.markdown("<br><br><p style='text-align: center; color: #bfbfbf; font-size: 12px;'>Vibe Coding with Streamlit</p>", unsafe_allow_html=True)
 st.markdown("---")
 st.caption("데이터 출처: 교육부 나이스(NEIS) API")
